@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.las-header{padding:0}
+.las-logo{max-width:200px;height:auto}
+.las-brand{font-weight:700;letter-spacing:.04em}
+.las-nav-link{color:#0b3c8a;border-bottom:2px solid transparent;transition:color .2s ease,border-color .2s ease,background-color .2s ease}
+.las-nav-link:hover{color:#0a58ca}
+.las-nav-link.is-active{border-color:#0b3c8a}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+
+.admin-card{border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.04);background:#fff}
+.admin-card .icon{background:#eef2ff;color:#4338ca;border-radius:9999px;display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin-right:16px}
+.admin-welcome{line-height:1.2}
+.admin-header{height:64px}
+
+.hr-sidebar a,
+.hr-sidebar button{
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hr-shell,
+.hr-shell *{
+    -webkit-tap-highlight-color: transparent;
+}
+
+.las-header a,
+.las-header button,
+.hr-shell a,
+.hr-shell button,
+.hr-shell input[type="button"],
+.hr-shell input[type="submit"]{
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.las-header a:focus,
+.las-header a:focus-visible,
+.las-header button:focus,
+.las-header button:focus-visible,
+.hr-shell a:focus,
+.hr-shell a:focus-visible,
+.hr-shell button:focus,
+.hr-shell button:focus-visible,
+.hr-shell input[type="button"]:focus,
+.hr-shell input[type="button"]:focus-visible,
+.hr-shell input[type="submit"]:focus,
+.hr-shell input[type="submit"]:focus-visible{
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.las-header a:active,
+.las-header button:active,
+.hr-shell a:active,
+.hr-shell button:active,
+.hr-shell input[type="button"]:active,
+.hr-shell input[type="submit"]:active{
+    box-shadow: none !important;
+    background-image: none !important;
+}

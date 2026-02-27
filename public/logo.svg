@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 128" width="200" height="50" aria-label="Leave Application System logo">
+  <rect x="0" y="0" width="512" height="128" fill="none"/>
+  <g fill="#0b3c8a">
+    <circle cx="64" cy="64" r="40" fill="#0b3c8a"/>
+    <path d="M120 44 h220 a8 8 0 0 1 0 16 H120 a8 8 0 0 1 0 -16zM120 72 h180 a8 8 0 0 1 0 16 H120 a8 8 0 0 1 0 -16z" />
+  </g>
+</svg>
