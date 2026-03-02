@@ -77,7 +77,7 @@
                                         <td class="px-4 py-2 text-gray-600">{{ $leave->start_date }} → {{ $leave->end_date }}</td>
                                         <td class="px-4 py-2">{{ $leave->days }}</td>
                                         <td class="px-4 py-2">
-                                            <span class="px-2 py-1 rounded text-sm {{ $leave->status === 'approved' ? 'bg-green-100 text-green-800' : ($leave->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">{{ ucfirst($leave->status) }}</span>
+                                            <x-status-chip :status="ucfirst($leave->status)" />
                                         </td>
                                         <td class="px-4 py-2">
                                             @php

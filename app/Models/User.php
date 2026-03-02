@@ -12,6 +12,15 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    public function getAvatarUrlAttribute(): ?string
+    {
+        $path = (string)($this->photo_path ?? '');
+        if ($path === '') return null;
+        $url = asset($path);
+        $ver = $this->updated_at ? (string)$this->updated_at->getTimestamp() : (string)time();
+        return $url.(str_contains($url, '?') ? '&' : '?').'v='.$ver;
+    }
+
     public function getDisplayNameAttribute(): string
     {
         $nameColumn = trim((string)($this->attributes['name'] ?? ''));
@@ -43,6 +52,7 @@ class User extends Authenticatable
         'province_office',
         'position',
         'signature_path',
+        'photo_path',
         'salary',
         'vl_total',
         'sl_total',

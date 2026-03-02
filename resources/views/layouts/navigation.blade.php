@@ -15,10 +15,15 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition" aria-label="User menu">
-                            <div class="h-10 w-10 rounded-full bg-[#0d3b66] text-white flex items-center justify-center shadow-sm">
-                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M12 12c2.761 0 5-2.686 5-6s-2.239-6-5-6-5 2.686-5 6 2.239 6 5 6zm0 2c-4.418 0-12 2.239-12 6v2h24v-2c0-3.761-7.582-6-12-6z"/>
-                                </svg>
+                            @php $avatar = Auth::user()?->avatar_url; @endphp
+                            <div class="h-10 w-10 rounded-full bg-[#0d3b66] text-white flex items-center justify-center shadow-sm overflow-hidden">
+                                @if ($avatar)
+                                    <img src="{{ $avatar }}" alt="Avatar" class="h-full w-full object-cover">
+                                @else
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <path d="M12 12c2.761 0 5-2.686 5-6s-2.239-6-5-6-5 2.686-5 6 2.239 6 5 6zm0 2c-4.418 0-12 2.239-12 6v2h24v-2c0-3.761-7.582-6-12-6z"/>
+                                    </svg>
+                                @endif
                             </div>
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-500">
                                 <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 011.08 1.04l-4.24 4.64a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
@@ -62,10 +67,15 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition" aria-label="User menu">
-                            <div class="h-10 w-10 rounded-full bg-[#0d3b66] text-white flex items-center justify-center shadow-sm">
-                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M12 12c2.761 0 5-2.686 5-6s-2.239-6-5-6-5 2.686-5 6 2.239 6 5 6zm0 2c-4.418 0-12 2.239-12 6v2h24v-2c0-3.761-7.582-6-12-6z"/>
-                                </svg>
+                            @php $avatar = Auth::user()?->avatar_url; @endphp
+                            <div class="h-10 w-10 rounded-full bg-[#0d3b66] text-white flex items-center justify-center shadow-sm overflow-hidden">
+                                @if ($avatar)
+                                    <img src="{{ $avatar }}" alt="Avatar" class="h-full w-full object-cover">
+                                @else
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <path d="M12 12c2.761 0 5-2.686 5-6s-2.239-6-5-6-5 2.686-5 6 2.239 6 5 6zm0 2c-4.418 0-12 2.239-12 6v2h24v-2c0-3.761-7.582-6-12-6z"/>
+                                    </svg>
+                                @endif
                             </div>
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-500">
                                 <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 011.08 1.04l-4.24 4.64a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>

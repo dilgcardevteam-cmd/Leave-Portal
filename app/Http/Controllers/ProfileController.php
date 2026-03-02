@@ -26,13 +26,35 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => ['image','max:2048'],
+            ]);
+            $file = $request->file('photo');
+            $dir = public_path('profile_photos');
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'png');
+            $name = 'user-'.$user->id.'-'.time().'.'.$ext;
+            // Delete previous photo to avoid multiple avatars
+            $old = (string)($user->photo_path ?? '');
+            if ($old !== '') {
+                $oldAbs = public_path($old);
+                if (is_file($oldAbs)) @unlink($oldAbs);
+            }
+            $file->move($dir, $name);
+            $user->photo_path = 'profile_photos/'.$name;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

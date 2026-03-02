@@ -230,6 +230,11 @@
 
     $reco = (array)($dj['dc_recommendation'] ?? []);
     $recoDecision = (string)($reco['decision'] ?? '');
+    if ($recoDecision === '') {
+        if ($leave->status === 'approved') { $recoDecision = 'approval'; }
+        elseif ($leave->status === 'rejected') { $recoDecision = 'disapproval'; }
+        else { $recoDecision = ''; }
+    }
     $recoReason = $safe($reco['reason'] ?? null, $safe($leave->dc_comment ?? null, ''));
 @endphp
 

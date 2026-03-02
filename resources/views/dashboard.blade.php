@@ -6,7 +6,7 @@
                 @php
                     $vl = (float)($baseline->vl_total ?? 0);
                     $sl = (float)($baseline->sl_total ?? 0);
-                    $totalCredits = (float)($baseline->credits_total ?? ($vl + $sl));
+                    $totalCredits = (float)($vl + $sl);
                 @endphp
                 <div class="max-w-6xl">
                     <div class="mb-6 flex items-start justify-between gap-4">
@@ -71,8 +71,15 @@
                     <div class="mt-8">
                         <div class="glass w-full">
                             <div class="p-4 sm:p-6">
-                                <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">History</h2>
-                                <div class="mt-1 text-sm text-gray-600">Recent Holds</div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">History</h2>
+                                        <div class="mt-1 text-sm text-gray-600">Recent Holds</div>
+                                    </div>
+                                    <a href="{{ route('user.credits') }}" class="inline-flex items-center rounded-xl px-4 py-2 text-white shadow-sm hover:brightness-95" style="background-color:#0d1f4d">
+                                        VIEW ALL
+                                    </a>
+                                </div>
                                 <div class="mt-6 overflow-x-auto rounded-xl ring-1 ring-gray-200 bg-white/60 backdrop-blur">
                                     <table class="min-w-full">
                                         <thead>
@@ -106,13 +113,7 @@
                                                     </td>
                                                     <td class="px-3 py-3">{{ number_format((float)$hold->amount, 3) }}</td>
                                                     <td class="px-3 py-3">
-                                                        @php
-                                                            $dot = $labelStatus === 'Approved' ? 'bg-green-600' : ($labelStatus === 'Rejected' ? 'bg-red-600' : 'bg-yellow-500');
-                                                        @endphp
-                                                        <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-900 ring-1 ring-gray-200">
-                                                            <span class="inline-block h-2.5 w-2.5 rounded-full {{ $dot }}"></span>
-                                                            {{ $labelStatus }}
-                                                        </span>
+                                                        <x-status-chip :status="$labelStatus" />
                                                     </td>
                                                     <td class="px-3 py-3 text-gray-700">
                                                         @if ($hold->created_at)
@@ -124,18 +125,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="mt-4 flex items-center justify-between text-sm text-gray-700">
-                                    <div>
-                                        @if($holds->count())
-                                            Showing {{ $holds->firstItem() }} to {{ $holds->lastItem() }} of {{ $holds->total() }} results
-                                        @else
-                                            No results
-                                        @endif
-                                    </div>
-                                    <div>
-                                        {{ $holds->links() }}
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

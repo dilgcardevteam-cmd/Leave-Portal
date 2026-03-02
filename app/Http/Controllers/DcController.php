@@ -124,9 +124,13 @@ class DcController extends Controller
                 $leave->dc_approved_at = Carbon::now();
                 $leave->dc_comment = $data['comment'] ?? null;
                 if ($data['status'] === 'approved') {
+                    $leave->dc_approved_by = \Illuminate\Support\Facades\Auth::id();
+                    $leave->dc_approved_at = \Carbon\Carbon::now();
                     $leave->workflow_state = 'final_pending';
                     $leave->status = 'pending';
                 } else {
+                    $leave->dc_approved_by = \Illuminate\Support\Facades\Auth::id();
+                    $leave->dc_approved_at = \Carbon\Carbon::now();
                     $leave->workflow_state = 'rejected';
                     $leave->status = 'rejected';
                 }
