@@ -9,6 +9,7 @@
                     $totalCredits = (float)($baseline->credits_total ?? ($vl + $sl));
                 @endphp
                 <div class="max-w-6xl">
+                    <!-- new changes -->
                     <h1 class="mb-6 text-4xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         <div class="glass text-gray-900">
