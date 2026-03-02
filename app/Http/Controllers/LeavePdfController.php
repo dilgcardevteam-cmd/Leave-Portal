@@ -110,10 +110,20 @@ class LeavePdfController extends Controller
             abort(404, 'LeaveApplicationForm.png not found');
         }
 
-        $im = imagecreatefrompng($bg);
+        if (!function_exists('imagecreatefrompng')) {
+            $dir = 'leave_images';
+            if (!Storage::disk('local')->exists($dir)) {
+                Storage::disk('local')->makeDirectory($dir);
+            }
+            $path = $dir.'/leave-'.$leave->id.'-base.png';
+            Storage::disk('local')->put($path, file_get_contents($bg), 'private');
+            return $path;
+        }
+
+        $im = \imagecreatefrompng($bg);
         if (!$im) abort(500, 'Unable to open base form image');
-        imagesavealpha($im, true);
-        $black = imagecolorallocate($im, 0, 0, 0);
+        \imagesavealpha($im, true);
+        $black = \imagecolorallocate($im, 0, 0, 0);
 
         $font = null;
         $fontCandidates = [
@@ -125,8 +135,8 @@ class LeavePdfController extends Controller
             if ($fc && file_exists($fc)) { $font = $fc; break; }
         }
 
-        $w = imagesx($im);
-        $h = imagesy($im);
+        $w = \imagesx($im);
+        $h = \imagesy($im);
 
         $user = $leave->user;
         $safe = fn(?string $v, string $fallback = ''): string => trim((string)$v) !== '' ? trim((string)$v) : $fallback;
@@ -140,9 +150,9 @@ class LeavePdfController extends Controller
             $x = (int)round($w * $rx);
             $y = (int)round($h * $ry);
             if ($font) {
-                imagettftext($im, $size, 0, $x, $y, $black, $font, $text);
+                \imagettftext($im, $size, 0, $x, $y, $black, $font, $text);
             } else {
-                imagestring($im, 4, $x, $y - 12, $text, $black);
+                \imagestring($im, 4, $x, $y - 12, $text, $black);
             }
         };
 
@@ -195,8 +205,8 @@ class LeavePdfController extends Controller
         }
         $path = $dir.'/leave-'.$leave->id.'.png';
         $abs = Storage::disk('local')->path($path);
-        imagepng($im, $abs, 1);
-        imagedestroy($im);
+        \imagepng($im, $abs, 1);
+        \imagedestroy($im);
         return $path;
     }
 }

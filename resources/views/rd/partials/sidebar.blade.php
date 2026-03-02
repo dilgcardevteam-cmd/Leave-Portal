@@ -1,7 +1,7 @@
 <aside class="hr-sidebar hidden min-h-[calc(100vh-4rem)] bg-gradient-to-b from-[#1c2a5c] to-[#17254f] p-4 text-white lg:block">
     <div class="text-center font-semibold text-white transition-all duration-200" :class="sidebarCollapsed ? 'mb-2 text-xs tracking-normal' : 'mb-3 text-lg tracking-wide'">Welcome</div>
     <div class="mb-4 flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
-        <div x-show="!sidebarCollapsed" class="px-2 text-xs uppercase tracking-wider text-white/70">Menu</div>
+        <div x-show="!sidebarCollapsed" class="px-2 text-xs uppercase tracking-wider text-white/70"></div>
         <button type="button" @click="sidebarCollapsed = !sidebarCollapsed" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus:ring-0" aria-label="Toggle sidebar">
             <svg class="h-5 w-5 transition-transform duration-300" :class="sidebarCollapsed ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M4 6h16v2H4V6zm0 6h16v2H4v-2zm0 6h16v2H4v-2z"/>
