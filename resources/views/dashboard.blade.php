@@ -9,12 +9,8 @@
                     $totalCredits = (float)($baseline->credits_total ?? ($vl + $sl));
                 @endphp
                 <div class="max-w-6xl">
-                    <div class="mb-6 flex items-start justify-between gap-4">
-                        <div>
-                            <h1 class="text-4xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
-                            <div class="mt-1 text-sm text-gray-600">Welcome, <span class="font-medium text-[#0d3b66]">{{ Auth::user()->display_name ?? Auth::user()->name }}</span></div>
-                        </div>
-                    </div>
+                    <!-- new changes -->
+                    <h1 class="mb-6 text-4xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         <div class="glass text-gray-900">
                             <div class="flex gap-4 p-4">
@@ -40,30 +36,21 @@
                             </div>
                         </div>
                         <div class="glass text-gray-900">
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="h-12 w-12 rounded-xl bg-blue-600 text-white flex items-center justify-center">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.418 0-8 2.239-8 5v3h16v-3c0-2.761-3.582-5-8-5z"/></svg>
-                                </div>
+                            <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Sick Leave Credits</div>
-                                <div class="ml-auto text-[34px] leading-none font-medium">{{ number_format($sl, 3) }}</div>
+                                <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($sl, 3) }}</div>
                             </div>
                         </div>
                         <div class="glass text-gray-900">
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="h-12 w-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l4 4-4 4-4-4 4-4zm0 8l4 4-4 4-4-4 4-4z"/></svg>
-                                </div>
+                            <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Vacation Leave Credits</div>
-                                <div class="ml-auto text-[34px] leading-none font-medium">{{ number_format($vl, 3) }}</div>
+                                <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($vl, 3) }}</div>
                             </div>
                         </div>
                         <div class="glass text-gray-900">
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="h-12 w-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a11 11 0 1011 11A11 11 0 0012 1zm1 11.41l3.29 3.3-1.42 1.41L11 13V7h2z"/></svg>
-                                </div>
+                            <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Total Credits</div>
-                                <div class="ml-auto text-[34px] leading-none font-medium">{{ number_format($totalCredits, 3) }}</div>
+                                <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($totalCredits, 3) }}</div>
                             </div>
                         </div>
                     </div>
@@ -73,7 +60,7 @@
                             <div class="p-4 sm:p-6">
                                 <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">History</h2>
                                 <div class="mt-1 text-sm text-gray-600">Recent Holds</div>
-                                <div class="mt-6 overflow-x-auto rounded-xl ring-1 ring-gray-200 bg-white/60 backdrop-blur">
+                                <div class="mt-6 overflow-x-auto">
                                     <table class="min-w-full">
                                         <thead>
                                             <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
@@ -86,9 +73,8 @@
                                         <tbody class="text-sm text-gray-900">
                                             @foreach ($holds as $hold)
                                                 @php
+                                                    $labelStatus = $hold->status === 'held' ? 'Applied' : ucfirst($hold->status ?? '');
                                                     $leave = $hold->leave;
-                                                    $map = ['applied' => 'Approved', 'held' => 'Pending', 'released' => 'Rejected'];
-                                                    $labelStatus = ucfirst($leave?->status ?? ($map[$hold->status] ?? ucfirst($hold->status ?? '')));
                                                     $leaveLink = null;
                                                     if ($leave && $leave->status === 'approved') {
                                                         $leaveLink = route('leaves.pdf.view', $leave);
@@ -96,7 +82,7 @@
                                                         $leaveLink = route('leaves.edit', $leave);
                                                     }
                                                 @endphp
-                                                <tr class="border-t border-gray-300/60 hover:bg-gray-50/70 transition">
+                                                <tr class="border-t border-gray-300/60">
                                                     <td class="px-3 py-3">
                                                         @if ($leaveLink)
                                                             <a href="{{ $leaveLink }}" class="text-indigo-700 hover:underline">#{{ $hold->leave_id }}</a>
@@ -106,11 +92,7 @@
                                                     </td>
                                                     <td class="px-3 py-3">{{ number_format((float)$hold->amount, 3) }}</td>
                                                     <td class="px-3 py-3">
-                                                        @php
-                                                            $dot = $labelStatus === 'Approved' ? 'bg-green-600' : ($labelStatus === 'Rejected' ? 'bg-red-600' : 'bg-yellow-500');
-                                                        @endphp
-                                                        <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-900 ring-1 ring-gray-200">
-                                                            <span class="inline-block h-2.5 w-2.5 rounded-full {{ $dot }}"></span>
+                                                        <span class="px-2 py-1 rounded text-xs {{ $hold->status === 'released' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800' }}">
                                                             {{ $labelStatus }}
                                                         </span>
                                                     </td>
