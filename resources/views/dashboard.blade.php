@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="hr-shell min-h-[calc(100vh-4rem)] bg-white" x-data="{ sidebarCollapsed: false }">
+    <div class="hr-shell min-h-[calc(100vh-4rem)] bg-[#f3f4f7]" x-data="{ sidebarCollapsed: false }">
         <div class="grid min-h-[calc(100vh-4rem)] grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] lg:transition-[grid-template-columns] lg:duration-200 lg:ease-out" :class="sidebarCollapsed ? 'lg:grid-cols-[88px_minmax(0,1fr)]' : 'lg:grid-cols-[280px_minmax(0,1fr)]'">
             @include('user.partials.sidebar')
             <section class="h-full overflow-auto p-6 sm:p-8 lg:p-10">
@@ -8,10 +8,10 @@
                     $sl = (float)($baseline->sl_total ?? 0);
                     $totalCredits = (float)($baseline->credits_total ?? ($vl + $sl));
                 @endphp
-                <div class="max-w-6xl mx-auto">
-                    <h1 class="text-[64px] leading-tight text-gray-900">Dashboard</h1>
-                    <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        <div class="rounded-lg bg-[#bec3bb] text-gray-900">
+                <div class="max-w-6xl">
+                    <h1 class="mb-6 text-4xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="glass text-gray-900">
                             <div class="flex gap-4 p-4">
                                 <div class="flex-1">
                                     <div class="text-[52px] leading-none font-medium">{{ $leaveCounts['total'] ?? 0 }}</div>
@@ -34,19 +34,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="rounded-lg bg-[#bec3bb] text-gray-900">
+                        <div class="glass text-gray-900">
                             <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Sick Leave Credits</div>
                                 <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($sl, 3) }}</div>
                             </div>
                         </div>
-                        <div class="rounded-lg bg-[#bec3bb] text-gray-900">
+                        <div class="glass text-gray-900">
                             <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Vacation Leave Credits</div>
                                 <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($vl, 3) }}</div>
                             </div>
                         </div>
-                        <div class="rounded-lg bg-[#bec3bb] text-gray-900">
+                        <div class="glass text-gray-900">
                             <div class="p-4">
                                 <div class="text-[11px] uppercase tracking-wide text-gray-800">Total Credits</div>
                                 <div class="mt-4 text-[34px] leading-none font-medium">{{ number_format($totalCredits, 3) }}</div>
@@ -54,36 +54,69 @@
                         </div>
                     </div>
 
-                    <div class="mt-10">
-                        <h2 class="text-[48px] leading-tight text-gray-900">History</h2>
-                        <div class="mt-4 rounded-lg bg-[#bec3bb] p-4 sm:p-5">
-                            <div class="text-[13px] text-gray-700">Recent Holds</div>
-                            <div class="mt-3 overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @forelse ($holds as $h)
-                                            <tr>
-                                                <td class="px-4 py-3">#{{ $h->leave_id }}</td>
-                                                <td class="px-4 py-3">{{ number_format((float)$h->amount, 3) }}</td>
-                                                <td class="px-4 py-3 capitalize">{{ $h->status }}</td>
-                                                <td class="px-4 py-3">{{ $h->created_at?->timezone(config('app.timezone'))->format('M d, Y g:i A') }}</td>
+                    <div class="mt-8">
+                        <div class="glass w-full">
+                            <div class="p-4 sm:p-6">
+                                <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">History</h2>
+                                <div class="mt-1 text-sm text-gray-600">Recent Holds</div>
+                                <div class="mt-6 overflow-x-auto">
+                                    <table class="min-w-full">
+                                        <thead>
+                                            <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                                                <th class="px-3 py-2">Leave</th>
+                                                <th class="px-3 py-2">Amount</th>
+                                                <th class="px-3 py-2">Status</th>
+                                                <th class="px-3 py-2">Date</th>
                                             </tr>
-                                        @empty
-                                            <tr><td class="px-4 py-6 text-gray-500" colspan="4">No recent holds.</td></tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="mt-4">
-                                {{ $holds->links() }}
+                                        </thead>
+                                        <tbody class="text-sm text-gray-900">
+                                            @foreach ($holds as $hold)
+                                                @php
+                                                    $labelStatus = $hold->status === 'held' ? 'Applied' : ucfirst($hold->status ?? '');
+                                                    $leave = $hold->leave;
+                                                    $leaveLink = null;
+                                                    if ($leave && $leave->status === 'approved') {
+                                                        $leaveLink = route('leaves.pdf.view', $leave);
+                                                    } elseif ($leave && $leave->status === 'pending') {
+                                                        $leaveLink = route('leaves.edit', $leave);
+                                                    }
+                                                @endphp
+                                                <tr class="border-t border-gray-300/60">
+                                                    <td class="px-3 py-3">
+                                                        @if ($leaveLink)
+                                                            <a href="{{ $leaveLink }}" class="text-indigo-700 hover:underline">#{{ $hold->leave_id }}</a>
+                                                        @else
+                                                            <span class="text-gray-800">#{{ $hold->leave_id }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-3 py-3">{{ number_format((float)$hold->amount, 3) }}</td>
+                                                    <td class="px-3 py-3">
+                                                        <span class="px-2 py-1 rounded text-xs {{ $hold->status === 'released' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800' }}">
+                                                            {{ $labelStatus }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-3 py-3 text-gray-700">
+                                                        @if ($hold->created_at)
+                                                            {{ $hold->created_at->timezone(config('app.timezone'))->format('M d, Y g:i A') }}
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between text-sm text-gray-700">
+                                    <div>
+                                        @if($holds->count())
+                                            Showing {{ $holds->firstItem() }} to {{ $holds->lastItem() }} of {{ $holds->total() }} results
+                                        @else
+                                            No results
+                                        @endif
+                                    </div>
+                                    <div>
+                                        {{ $holds->links() }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
