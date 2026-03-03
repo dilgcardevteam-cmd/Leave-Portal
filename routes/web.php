@@ -61,6 +61,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
     Route::post('/admin/users/{user}/role', [\App\Http\Controllers\AdminController::class, 'updateRole'])->name('admin.users.role');
+    Route::get('/admin/smtp', [\App\Http\Controllers\AdminController::class, 'smtp'])->name('admin.smtp');
+    Route::post('/admin/smtp/test', [\App\Http\Controllers\AdminController::class, 'smtpTestSend'])->name('admin.smtp.test');
     Route::post('/admin/users/{user}/credits', [\App\Http\Controllers\AdminController::class, 'updateUserCredits'])->name('admin.users.credits');
     Route::get('/admin/leaves', [\App\Http\Controllers\AdminController::class, 'leaves'])->name('admin.leaves');
     Route::get('/admin/leaves/{leave}', [\App\Http\Controllers\AdminController::class, 'showLeave'])->name('admin.leaves.show');

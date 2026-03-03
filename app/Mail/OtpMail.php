@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class OtpMail extends Mailable
@@ -29,7 +30,8 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your OTP Code',
+            from: new Address((string)config('mail.from.address'), 'Leave Application System'),
+            subject: 'Your OTP Code'
         );
     }
 
@@ -38,10 +40,22 @@ class OtpMail extends Mailable
      */
     public function content(): Content
     {
+        $base = (string) (config('mail.public_base') ?: config('app.url', ''));
+        if ($base !== '') {
+            $base = preg_replace('#^http://#', 'https://', $base) ?? $base;
+            $base = rtrim($base, '/');
+        }
+        $rel = '/dilgLogo.png';
+        if (!file_exists(public_path('dilgLogo.png'))) {
+            $rel = '/images/dilg-logo.png';
+        }
+        $logoUrl = $base !== '' ? ($base.$rel) : 'https://example.com/images/dilg-logo.png';
         return new Content(
-            markdown: 'emails.otp',
+            view: 'emails.otp_html',
             with: [
                 'code' => $this->code,
+                'appName' => 'Leave Application System',
+                'logoUrl' => $logoUrl,
             ],
         );
     }

@@ -31,6 +31,31 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    public function smtp()
+    {
+        $mail = config('mail');
+        $smtp = $mail['mailers']['smtp'] ?? [];
+        $from = $mail['from'] ?? ['address' => null, 'name' => null];
+        return view('admin.smtp', [
+            'mail' => $mail,
+            'smtp' => $smtp,
+            'from' => $from,
+        ]);
+    }
+
+    public function smtpTestSend(Request $request)
+    {
+        $request->validate([
+            'to' => ['required','email'],
+        ]);
+        try {
+            \Illuminate\Support\Facades\Mail::to($request->to)->send(new \App\Mail\OtpMail('123456'));
+            return back()->with('status', 'Test email sent to '.$request->to);
+        } catch (\Throwable $e) {
+            return back()->withErrors(['status' => 'Failed to send: '.$e->getMessage()]);
+        }
+    }
+
     public function updateRole(Request $request, User $user)
     {
         $request->validate([

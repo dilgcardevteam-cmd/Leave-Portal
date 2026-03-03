@@ -115,4 +115,6 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'public_base' => env('MAIL_PUBLIC_BASE'),
+
 ];

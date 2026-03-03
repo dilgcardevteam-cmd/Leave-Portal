@@ -4,34 +4,22 @@
     <meta charset="utf-8">
     <title>Application for Leave #{{ $leave->id }}</title>
     <style>
-        @page { margin: 6px 6px 8px; }
-        body { font-family: DejaVu Sans, sans-serif; font-size: 9px; color: #000; }
+        @page { size: A4; margin: 6px 6px 8px; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #000; }
         * { box-sizing: border-box; }
         table { border-collapse: collapse; width: 100%; }
-        .form td, .form th { border: 1px solid #000; vertical-align: top; padding: 3px 4px; }
+        .form td, .form th { border: 1px solid #000; vertical-align: top; padding: 4px 6px; }
         .center { text-align: center; }
         .right { text-align: right; }
         .bold { font-weight: 700; }
         .small { font-size: 9px; }
         .tiny { font-size: 8px; }
-        .section { font-weight: 700; font-size: 10.5px; letter-spacing: .2px; }
+        .section { font-weight: 700; font-size: 11px; letter-spacing: .2px; }
         .hdr-wrap { position: relative; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
-        .hdr-left { font-size: 10px; font-style: italic; font-weight: 700; line-height: 1.25; }
-        .hdr-title { font-size: 22px; font-weight: 800; letter-spacing: .8px; }
+        .hdr-left { font-size: 10px; font-style: normal; font-weight: 700; line-height: 1.25; letter-spacing: .2px; }
+        .hdr-title { font-size: 22px; font-weight: 800; letter-spacing: .6px; }
         .logo { width: 64px; height: 64px; object-fit: contain; margin: 0 auto; }
-        .stamp-box { border: 1px dashed #999; padding: 10px 8px; color: #666; text-align: center; font-size: 9px; }
-        .qr-box {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 48px;
-            height: 48px;
-            border: 1px solid #000;
-            font-size: 7px;
-            line-height: 46px;
-            text-align: center;
-            font-weight: 700;
-        }
+        .stamp-box { display: none; }
         .line {
             display: inline-block;
             min-height: 10px;
@@ -45,21 +33,21 @@
         .line.long { width: 100%; }
         .chk {
             display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid #000;
+            width: 12px;
+            height: 12px;
+            border: 1.5px solid #000;
             text-align: center;
             line-height: 10px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            margin-right: 4px;
-            vertical-align: text-top;
+            margin-right: 6px;
+            vertical-align: middle;
         }
-        .list-row { margin: 2px 0; }
-        .name-val { font-size: 13px; font-weight: 800; text-transform: uppercase; text-align: center; letter-spacing: .3px; }
-        .office-val { font-size: 14px; font-weight: 800; text-transform: uppercase; text-align: center; letter-spacing: .4px; }
+        .list-row { margin: 3px 0; }
+        .name-val { font-size: 13px; font-weight: 800; text-transform: uppercase; text-align: center; letter-spacing: .2px; }
+        .office-val { font-size: 14px; font-weight: 800; text-transform: uppercase; text-align: center; letter-spacing: .3px; }
         .no-pad td, .no-pad th { padding: 0; }
-        .inner td, .inner th { border: 1px solid #000; padding: 1px 2px; }
+        .inner td, .inner th { border: 1px solid #000; padding: 2px 3px; }
         .sig { margin-top: 10px; text-align: center; }
         .sig .n { font-size: 12px; font-weight: 700; text-decoration: underline; text-transform: uppercase; }
         .sig .p { font-size: 9px; }
@@ -82,7 +70,13 @@
     $dj = is_array($leave->details_json ?? null) ? $leave->details_json : [];
     $user = $leave->user;
 
-    $logoPath = public_path('logo.png');
+    $logoCandidates = [
+        public_path('images/dilg-logo.png'),
+        public_path('dilg-logo.png'),
+        public_path('logo.png'),
+    ];
+    $logoPath = null;
+    foreach ($logoCandidates as $c) { if (file_exists($c)) { $logoPath = $c; break; } }
     $logoSrc = file_exists($logoPath) ? ('file:///' . str_replace('\\', '/', $logoPath)) : null;
 
     $typeName = trim((string)($dj['type_of_leave']['name'] ?? $leave->category?->name ?? ''));
@@ -239,7 +233,6 @@
 @endphp
 
 <div class="hdr-wrap">
-    <div class="qr-box">QR</div>
     <table>
         <tr>
             <td style="width:16%; vertical-align:top;" class="hdr-left">
@@ -251,10 +244,7 @@
                     <img src="{{ $logoSrc }}" alt="DILG Logo" class="logo">
                 @endif
             </td>
-            <td style="width:48%; vertical-align:middle;" class="center hdr-title">APPLICATION FOR LEAVE</td>
-            <td style="width:22%; vertical-align:middle;">
-                <div class="stamp-box">Stamp of Date of Receipt</div>
-            </td>
+            <td style="width:70%; vertical-align:middle;" class="center hdr-title">APPLICATION FOR LEAVE</td>
         </tr>
     </table>
 </div>
@@ -264,11 +254,11 @@
         <td colspan="3" style="height:20px;"></td>
     </tr>
     <tr>
-        <td style="width:34%;">
+        <td style="width:36%;">
             <div>1.&nbsp; OFFICE/DEPARTMENT</div>
             <div class="office-val">{{ strtoupper($safe($dept, '-')) }}</div>
         </td>
-        <td colspan="2" style="width:66%;">
+        <td colspan="2" style="width:64%;">
             <div>2.&nbsp; NAME :</div>
             <div class="name-val">{{ strtoupper($displayName) }}</div>
         </td>
@@ -292,7 +282,7 @@
         <th colspan="3" class="center section">6.&nbsp; DETAILS OF APPLICATION</th>
     </tr>
     <tr>
-        <td style="width:53%;">
+        <td style="width:50%;">
             <div class="section" style="font-weight:400;">6.A&nbsp; TYPE OF LEAVE TO BE AVAILED OF</div>
             <div class="list-row"><span class="chk">{!! $tick($checks['vacation']) !!}</span>Vacation Leave <span class="tiny">(Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></div>
             <div class="list-row"><span class="chk">{!! $tick($checks['mandatory']) !!}</span>Mandatory/Forced Leave<span class="tiny">(Sec. 25, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></div>
@@ -310,7 +300,7 @@
             <div style="margin-top:12px; font-style:italic;">Others:</div>
             <div class="line long">{{ $otherType }}</div>
         </td>
-        <td colspan="2" style="width:47%;">
+        <td colspan="2" style="width:50%;">
             <div class="section" style="font-weight:400;">6.B&nbsp; DETAILS OF LEAVE</div>
             <div style="margin:6px 0 2px; font-style:italic;">In case of Vacation/Special Privilege Leave:</div>
             <div class="list-row"><span class="chk">{!! $tick($safe($vac['within_ph'] ?? null) !== '') !!}</span>Within the Philippines: <span class="line mid">{{ $safe($vac['within_ph'] ?? null) }}</span></div>
@@ -428,8 +418,6 @@
     </tr>
 </table>
 
-<div class="reminder">
-    REMINDER: PLEASE FILL-OUT CSS FORM THROUGH: https://ecsm.dilg.gov.ph/ph/?survey=CSS-LeaveApplication OR THROUGH QR CODE ABOVE
-</div>
+ 
 </body>
 </html>

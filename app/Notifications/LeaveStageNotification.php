@@ -15,6 +15,10 @@ class LeaveStageNotification extends Notification
 
     public function via(object $notifiable): array
     {
+        $role = (string)($notifiable->role ?? '');
+        if (in_array($role, ['hr','dc','rd','ard','admin'], true)) {
+            return ['database'];
+        }
         return ['database', 'mail'];
     }
 
@@ -34,8 +38,7 @@ class LeaveStageNotification extends Notification
         return (new MailMessage)
             ->subject($this->title)
             ->line($this->message)
-            ->action('Open Dashboard', url('/'))
+            ->action('Download PDF', route('leaves.pdf', $this->leave))
             ->line('Leave ID: '.$this->leave->id);
     }
 }
-

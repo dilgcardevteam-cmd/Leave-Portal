@@ -46,7 +46,27 @@ class LeavePdfController extends Controller
         if (!$this->canAccess($leave)) {
             abort(403);
         }
-        $imagePath = self::generateFormImage($leave);
+        if (function_exists('imagecreatefrompng')) {
+            $imagePath = self::generateFormImage($leave);
+            DB::table('leave_pdf_access_logs')->insert([
+                'leave_id' => $leave->id,
+                'user_id' => Auth::id(),
+                'role' => Auth::user()?->role ?? null,
+                'ip' => $request->ip(),
+                'accessed_at' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            $abs = Storage::disk('local')->path($imagePath);
+            return response()->file($abs, [
+                'Content-Type' => 'image/png',
+                'Content-Disposition' => 'inline; filename="LeaveApplicationForm-'.$leave->id.'.png"',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
+        }
+        $pdfPath = self::generateAndStore($leave);
         DB::table('leave_pdf_access_logs')->insert([
             'leave_id' => $leave->id,
             'user_id' => Auth::id(),
@@ -56,10 +76,10 @@ class LeavePdfController extends Controller
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        $abs = Storage::disk('local')->path($imagePath);
+        $abs = Storage::disk('local')->path($pdfPath);
         return response()->file($abs, [
-            'Content-Type' => 'image/png',
-            'Content-Disposition' => 'inline; filename="LeaveApplicationForm-'.$leave->id.'.png"',
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="Application-for-Leave-'.$leave->id.'.pdf"',
             'Cache-Control' => 'no-store, no-cache, must-revalidate',
             'Pragma' => 'no-cache',
             'Expires' => '0',
@@ -97,6 +117,9 @@ class LeavePdfController extends Controller
 
     private static function generateFormImage(Leave $leave): string
     {
+        if (!function_exists('imagecreatefrompng')) {
+            abort(501, 'GD extension not available to render image preview');
+        }
         @ini_set('memory_limit', '1024M');
         $bgCandidates = [
             public_path('images/LeaveApplicationForm.png'),

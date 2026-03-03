@@ -65,8 +65,14 @@
                 }
                 .auth-panel {
                     width: 50%;
+<<<<<<< Updated upstream
                     min-height: 560px;
                     transition: transform 600ms ease;
+=======
+                    min-height: 100vh;
+                    transition: transform 600ms ease-in-out;
+                    will-change: transform;
+>>>>>>> Stashed changes
                 }
                 .auth-logo {
                     background: #002C76;

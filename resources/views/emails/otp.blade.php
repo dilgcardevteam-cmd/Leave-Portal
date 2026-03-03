@@ -1,14 +1,36 @@
 <x-mail::message>
-# Your OTP Code
+# 🔐 Verify Your Email
 
-Use the code below to verify your email and activate your account:
+Hi there,
+
+Please use the one-time password (OTP) below to securely verify your email address and activate your account.
 
 <x-mail::panel>
-<h2 style="text-align:center; letter-spacing:4px; font-weight:700;">{{ $code }}</h2>
+<div style="text-align:center;">
+    <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">
+        YOUR VERIFICATION CODE
+    </div>
+    <div style="
+        font-size:28px;
+        font-weight:800;
+        letter-spacing:6px;
+        color:#0f172a;
+    ">
+        {{ $code }}
+    </div>
+    <div style="font-size:12px; color:#6b7280; margin-top:10px;">
+        Expires in <strong>2 minutes</strong>
+    </div>
+</div>
 </x-mail::panel>
 
-This code will expire in 2 minutes.
+For your security, **do not share this code with anyone**.  
+If you didn’t request this verification, you can safely ignore this email.
 
 Thanks,<br>
-{{ config('app.name') }}
+**{{ config('app.name') }}**
+
+<x-slot:subcopy>
+This is an automated message sent for security verification purposes.
+</x-slot:subcopy>
 </x-mail::message>

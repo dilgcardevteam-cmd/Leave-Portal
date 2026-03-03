@@ -16,6 +16,10 @@
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v4H3V5zm0 6h10v8H3v-8zm12 0h6v8h-6v-8z"/></svg>
             <span class="font-medium">Leave Category Management</span>
         </a>
+        <a href="{{ route('admin.smtp') }}" class="flex items-center gap-3 px-4 py-3 rounded-md transition @if(request()->routeIs('admin.smtp')) bg-white/20 @else hover:bg-white/10 @endif" @if(request()->routeIs('admin.smtp')) aria-current="page" @endif>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4V4zm0 4h16v10H4V8zm2 2h12v6H6v-6z"/></svg>
+            <span class="font-medium">SMTP Settings</span>
+        </a>
         <a href="{{ route('admin.help') }}" class="flex items-center gap-3 px-4 py-3 rounded-md transition @if(request()->routeIs('admin.help')) bg-white/20 @else hover:bg-white/10 @endif" @if(request()->routeIs('admin.help')) aria-current="page" @endif>
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm1.07-7.75l-.9.92A2 2 0 0012 12h-1v-1c0-.55.22-1.05.59-1.41l1.2-1.2a1.5 1.5 0 10-2.56-1.06H8.5a3.5 3.5 0 116.57 1.72z"/></svg>
             <span class="font-medium">Help & Support</span>
