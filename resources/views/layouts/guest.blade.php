@@ -16,7 +16,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="text-gray-900 antialiased bg-white" style="font-family: 'Poppins', sans-serif;">
-        @if (request()->routeIs('login') || request()->routeIs('register'))
+        @if (request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.request'))
             <div class="min-h-screen w-full bg-white">
                 <div
                     id="auth-shell"
@@ -25,8 +25,12 @@
                 >
                     <section class="auth-panel auth-logo">
                         <div class="auth-logo-inner">
-                            <img src="{{ asset('dilgLogo.png') }}" alt="DILG Logo" class="auth-logo-img">
-                            <div class="auth-logo-text">Leave Application System</div>
+                            <img src="{{ asset('dilgLogo.png') }}" alt="DILG Logo" class="brand-logo">
+                            <div class="greet-wrap">
+                                <!-- <div class="greet-eyebrow">Welcome</div> -->
+                                <h2 class="greet-title">Leave Application System</h2>
+                                <p class="greet-sub">Manage your leaves with a modern, friendly experience.</p>
+                            </div>
                         </div>
                     </section>
                     <section class="auth-panel auth-form">
@@ -46,42 +50,72 @@
             </div>
         @endif
 
-        @if (request()->routeIs('login') || request()->routeIs('register'))
+        @if (request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.request'))
             <style>
                 .auth-shell {
-                    min-height: 100vh;
+                    min-height: 80vh;
                     display: flex;
                     overflow: hidden;
+                    width: min(100%, 880px);
+                    margin: 24px auto;
+                    border-radius: 18px;
+                    box-shadow: 0 24px 64px rgba(0, 44, 118, 0.35), 0 8px 24px rgba(0, 44, 118, 0.25);
+                    border: none;
+                    background: #fff;
                 }
                 .auth-panel {
                     width: 50%;
-                    min-height: 100vh;
+                    min-height: 560px;
                     transition: transform 600ms ease;
                 }
                 .auth-logo {
-                    background: #0b3ea8;
+                    background: #002C76;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    
                 }
-                .auth-logo-inner {
-                    text-align: center;
-                    color: #ffffff;
-                }
-                .auth-logo-img {
-                    width: 210px;
-                    height: 210px;
+               .auth-logo-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* vertical center */
+    align-items: center;       /* horizontal center */
+    text-align: center;        /* center text */
+    color: #ffffff;
+    padding: 36px;
+    height: 100%;
+}
+                .brand-logo{
+                    width: 300px;
+                    height: 300px;
                     object-fit: contain;
-                    margin: 0 auto 24px;
-                    border-radius: 9999px;
-                    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+                    display: block;
                     background: #ffffff;
-                    padding: 10px;
+                    border-radius: 999px;
+                    /* padding: 8px; */
+                    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+                    margin-bottom: 18px;
                 }
-                .auth-logo-text {
-                    font-size: 20px;
-                    font-weight: 600;
-                    letter-spacing: 0.02em;
+                .greet-wrap {
+                    max-width: 360px;
+                }
+                .greet-eyebrow {
+                    font-size: 12px;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    opacity: .9;
+                }
+                .greet-title {
+                    font-size: 25px;
+                    font-weight: 700;
+                    margin-top: 6px;
+                    margin-bottom: 10px;
+                    text-shadow: 0 4px 18px rgba(0,0,0,.15);
+                }
+                .greet-sub {
+                    font-size: 13px;
+                    color: #ffffff;
+                    opacity: 1;
                 }
                 .auth-form {
                     background: #ffffff;
@@ -92,59 +126,87 @@
                 .auth-form-inner {
                     width: 360px;
                 }
+                .auth-shell[data-view="register"] .auth-form-inner {
+                    width: 400px;
+                    max-height: 520px;
+                    overflow-y: auto;
+                    padding: 0 12px;
+                }
                 .auth-shell[data-view="register"] .auth-logo {
                     transform: translateX(100%);
                 }
                 .auth-shell[data-view="register"] .auth-form {
                     transform: translateX(-100%);
                 }
+                .glow-field { position: relative; }
+                .glow-icon {
+                    position: absolute;
+                    left: 14px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 18px; height: 18px;
+                    color: #FFDE15;
+                    opacity: 1;
+                }
                 .auth-input {
                     width: 100%;
-                    height: 42px;
-                    border: 1px solid #e3e6ee;
-                    border-radius: 10px;
-                    padding: 0 14px;
+                    height: 48px;
+                    border-radius: 999px;
+                    padding: 0 16px;
                     font-size: 13px;
                     color: #111827;
                     background: #ffffff;
+                    border: 2px solid #002C76;
+                    transition: border-color .2s ease, background .2s ease;
                 }
+                .auth-shell[data-view="register"] .auth-form-inner .auth-input {
+                    height: 40px;
+                    font-size: 12px;
+                    padding: 0 14px;
+                }
+                .auth-shell[data-view="register"] .auth-form-inner .glow-icon {
+                    width: 16px; height: 16px;
+                    left: 12px;
+                }
+                .glow-field .auth-input { padding-left: 44px; }
                 .auth-input:focus {
                     outline: none;
-                    border-color: #7c66ff;
-                    box-shadow: 0 0 0 3px rgba(124, 102, 255, 0.2);
+                    border-color: #002C76;
+                    box-shadow: none;
                 }
                 .auth-primary-btn {
                     width: 100%;
-                    height: 42px;
+                    height: 46px;
                     border-radius: 999px;
-                    background: #6c5ce7;
+                    background: #002C76;
                     color: #ffffff;
                     font-weight: 600;
                     font-size: 13px;
-                    transition: background 200ms ease;
+                    transition: filter 200ms ease, transform 120ms ease;
                 }
                 .auth-primary-btn:hover {
-                    background: #5a4bdc;
+                    filter: brightness(0.95);
                 }
+                .auth-primary-btn:active { transform: translateY(1px); }
                 .auth-google-btn {
                     width: 100%;
                     height: 40px;
                     border-radius: 999px;
-                    border: 1px solid #e5e7eb;
+                    border: 1px solid #002C76;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
                     font-size: 12px;
                     font-weight: 600;
-                    color: #4b5563;
-                    background: #f5f6fa;
+                    color: #002C76;
+                    background: #ffffff;
                 }
                 .auth-divider {
                     display: flex;
                     align-items: center;
                     gap: 10px;
-                    color: #9ca3af;
+                    color: #002C76;
                     font-size: 11px;
                     margin: 16px 0;
                 }
@@ -152,7 +214,7 @@
                 .auth-divider::after {
                     content: "";
                     height: 1px;
-                    background: #e5e7eb;
+                    background: #002C76;
                     flex: 1;
                 }
                 .auth-scroll {
@@ -164,12 +226,37 @@
                     width: 6px;
                 }
                 .auth-scroll::-webkit-scrollbar-thumb {
-                    background: #d6d9e5;
+                    background: #002C76;
                     border-radius: 999px;
+                }
+                .auth-link{
+                    text-decoration: none;
+                    transition: color .2s ease-in-out, opacity .2s ease-in-out, transform .08s ease-in-out;
+                }
+                .auth-link:hover{ text-decoration: underline; }
+                .auth-link:active{ transform: scale(0.98); opacity: .85; }
+                .auth-form-inner.auth-switch-out{
+                    opacity: 0;
+                    transform: translateY(8px);
+                    transition: opacity .35s ease-in-out, transform .35s ease-in-out;
+                }
+                .auth-form-inner.auth-switch-pre{
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                .auth-form-inner.auth-switch-in{
+                    opacity: 1;
+                    transform: translateY(0);
+                    transition: opacity .35s ease-in-out, transform .35s ease-in-out;
                 }
                 @media (max-width: 1023px) {
                     .auth-shell {
                         flex-direction: column;
+                        width: 100%;
+                        margin: 0;
+                        border-radius: 0;
+                        box-shadow: none;
+                        border: none;
                     }
                     .auth-panel {
                         width: 100%;
@@ -213,6 +300,12 @@
                         shell.dataset.view = target;
 
                         try {
+                            if (!prefersReduced) {
+                                formInner.classList.remove('auth-switch-in');
+                                formInner.classList.add('auth-switch-out');
+                                formInner.setAttribute('aria-busy','true');
+                                await new Promise(r => setTimeout(r, 160));
+                            }
                             let html = viewCache.get(href);
                             if (!html) {
                                 const res = await fetch(href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
@@ -224,6 +317,14 @@
                             const nextInner = nextShell ? nextShell.querySelector('.auth-form-inner') : null;
                             if (nextInner) {
                                 formInner.innerHTML = nextInner.innerHTML;
+                                if (!prefersReduced) {
+                                    formInner.classList.remove('auth-switch-out');
+                                    formInner.classList.add('auth-switch-pre');
+                                    requestAnimationFrame(() => {
+                                        formInner.classList.remove('auth-switch-pre');
+                                        formInner.classList.add('auth-switch-in');
+                                    });
+                                }
                                 history.pushState({}, '', href);
                                 bindSwitchLinks();
                             } else {
@@ -232,7 +333,10 @@
                         } catch (e) {
                             window.location.href = href;
                         } finally {
-                            setTimeout(() => { transitioning = false; }, 100);
+                            setTimeout(() => {
+                                formInner.removeAttribute('aria-busy');
+                                transitioning = false;
+                            }, 350);
                         }
                     }
 
@@ -251,17 +355,18 @@
 
                     const loginHref = "{{ route('login') }}";
                     const registerHref = "{{ route('register') }}";
-                    const currentHref = window.location.pathname.includes('register') ? registerHref : loginHref;
-                    const prefetchHref = currentHref === loginHref ? registerHref : loginHref;
-
-                    prefetchView(prefetchHref);
+                    const forgotHref = "{{ route('password.request') }}";
+                    const currentHref = window.location.pathname.includes('register')
+                        ? registerHref
+                        : (window.location.pathname.includes('forgot-password') ? forgotHref : loginHref);
+                    [loginHref, registerHref, forgotHref].forEach(prefetchView);
 
                     bindSwitchLinks();
 
                     window.addEventListener('popstate', () => {
                         if (!shell) return;
                         const url = window.location.href;
-                        const target = url.includes('/register') ? 'register' : 'login';
+                        const target = url.includes('/register') ? 'register' : (url.includes('/forgot-password') ? 'forgot' : 'login');
                         swapAuthView(target, url);
                     });
 
