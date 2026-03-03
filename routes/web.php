@@ -77,6 +77,8 @@ Route::middleware(['auth', 'hr'])->group(function () {
     Route::get('/hr', [\App\Http\Controllers\HrController::class, 'index'])->name('hr.index');
     Route::get('/hr/leaves', [\App\Http\Controllers\HrController::class, 'leaves'])->name('hr.leaves');
     Route::get('/hr/downloads', [\App\Http\Controllers\HrController::class, 'downloads'])->name('hr.downloads');
+    Route::get('/hr/api/calendar', [\App\Http\Controllers\HrController::class, 'calendarData'])->name('hr.calendar.data');
+    Route::get('/hr/calendar/export', [\App\Http\Controllers\HrController::class, 'exportCalendar'])->name('hr.calendar.export');
     Route::get('/hr/settings', [\App\Http\Controllers\HrController::class, 'settings'])->name('hr.settings');
     Route::post('/hr/settings/credits/{user}', [\App\Http\Controllers\HrController::class, 'updateCreditManagement'])->name('hr.settings.credits.update');
     Route::post('/hr/settings/credits/{user}/monthly', [\App\Http\Controllers\HrController::class, 'applyMonthlyCredits'])->name('hr.settings.credits.monthly');

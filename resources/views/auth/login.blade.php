@@ -1,80 +1,68 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="text-center">
+        <h1 class="text-[20px] font-semibold text-gray-900">Welcome Back</h1>
+        <p class="mt-1 text-[11px] text-gray-500">
+            Build your design system effortlessly with our
+            <br>powerful component library.
+        </p>
+    </div>
 
-    <form method="POST" action="{{ route('login') }}">
+    <x-auth-session-status class="mt-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
         @csrf
 
-        <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <label for="email" class="block text-[11px] text-gray-500 mb-1">Email</label>
+            <input id="email" class="auth-input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="alex.jordan@gmail.com">
+            @if ($errors->has('email'))
+                <div class="mt-2 text-[11px] text-red-600">{{ $errors->first('email') }}</div>
+            @endif
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <div class="relative mt-1">
-                <x-text-input id="password" class="block w-full pr-12"
-                                type="password"
-                                name="password"
-                                required autocomplete="current-password" />
-                <button type="button" id="togglePassword" class="absolute right-3 top-1/2 z-10 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-gray-700" aria-label="Show password">
-                    <svg id="eyeOpen" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    <svg id="eyeClosed" class="h-5 w-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 3l18 18"/>
-                        <path d="M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42"/>
-                        <path d="M9.88 4.24A10.94 10.94 0 0112 4c6.5 0 10 8 10 8a18.13 18.13 0 01-3.09 4.21"/>
-                        <path d="M6.61 6.61A18.56 18.56 0 002 12s3.5 8 10 8a10.9 10.9 0 005.39-1.61"/>
-                    </svg>
-                </button>
-                <style>
-                    .login-glass #togglePassword { right: 0.9rem; }
-                </style>
-            </div>
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+            <label for="password" class="block text-[11px] text-gray-500 mb-1">Password</label>
+            <input id="password" class="auth-input" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            @if ($errors->has('password'))
+                <div class="mt-2 text-[11px] text-red-600">{{ $errors->first('password') }}</div>
+            @endif
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        <div class="flex items-center justify-between">
+            @if (Route::has('password.request'))
+                <a class="text-[11px] text-[#6c5ce7] font-medium" href="{{ route('password.request') }}">Forgot password?</a>
+            @endif
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-gray-500">
+            <span>Remember sign in details</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input id="remember_me" type="checkbox" name="remember" class="sr-only peer">
+                <div class="h-[18px] w-[34px] rounded-full bg-[#e5e7eb] peer-checked:bg-[#6c5ce7] transition relative">
+                    <span class="absolute left-[2px] top-[2px] h-[14px] w-[14px] rounded-full bg-white transition peer-checked:translate-x-[16px]"></span>
+                </div>
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-900 hover:text-black rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+        <button type="submit" class="auth-primary-btn">Log in</button>
 
-            <x-primary-button class="ms-3 rounded-full px-6 py-2 bg-gray-900 hover:bg-gray-800">
-                {{ __('Log in') }}
-            </x-primary-button>
+        <div class="auth-divider">OR</div>
+
+        <button type="button" class="auth-google-btn">
+            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white">
+                <svg viewBox="0 0 48 48" class="h-4 w-4">
+                    <path fill="#EA4335" d="M24 9.5c3.2 0 5.4 1.4 6.6 2.5l4.5-4.5C32.5 5 28.7 3.5 24 3.5 14.6 3.5 6.7 9 3.2 16.9l5.2 4c1.2-4.8 5.6-8.4 10.6-8.4z"/>
+                    <path fill="#34A853" d="M46 24.5c0-1.4-.1-2.4-.3-3.5H24v6.6h12.5c-.6 3-2.4 5.5-5.2 7.1l5.1 4c3-2.8 4.6-6.9 4.6-12.2z"/>
+                    <path fill="#4A90E2" d="M8.4 28.9c-.3-1-.5-2.1-.5-3.4s.2-2.4.5-3.4l-5.2-4C1.8 19.7 1 22.5 1 25.5s.8 5.8 2.2 8.4l5.2-4z"/>
+                    <path fill="#FBBC05" d="M24 45c6.2 0 11.4-2 15.2-5.4l-5.1-4c-1.4 1-3.4 1.7-6.1 1.7-4.9 0-9.1-3.3-10.6-7.8l-5.2 4C14.6 41 18.9 45 24 45z"/>
+                </svg>
+            </span>
+            Continue with Google
+        </button>
+
+        <div class="mt-4 text-center text-[11px] text-gray-500">
+            Don’t have an account?
+            <a href="{{ route('register') }}" class="text-[#6c5ce7] font-semibold" data-auth-switch="register">Sign up</a>
         </div>
     </form>
-    <script>
-        (function () {
-            const input = document.getElementById('password');
-            const btn = document.getElementById('togglePassword');
-            const eyeOpen = document.getElementById('eyeOpen');
-            const eyeClosed = document.getElementById('eyeClosed');
-            if (!input || !btn || !eyeOpen || !eyeClosed) return;
-            btn.addEventListener('click', () => {
-                const isHidden = input.type === 'password';
-                input.type = isHidden ? 'text' : 'password';
-                eyeOpen.classList.toggle('hidden', !isHidden);
-                eyeClosed.classList.toggle('hidden', isHidden);
-                btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-            });
-        })();
-    </script>
 </x-guest-layout>
