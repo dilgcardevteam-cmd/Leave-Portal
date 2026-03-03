@@ -261,6 +261,186 @@ class HrController extends Controller
         return view('hr.help');
     }
 
+    public function calendarData(Request $request)
+    {
+        $status = $request->query('status');
+        $dept = trim((string)$request->query('department', ''));
+        $type = $request->query('type');
+        $employee = trim((string)$request->query('employee', ''));
+        $start = $request->query('start');
+        $end = $request->query('end');
+
+        $query = Leave::with(['user', 'category', 'approver'])->latest();
+        if ($status && in_array($status, ['pending','approved','rejected'], true)) {
+            $query->where('status', $status);
+        }
+        if ($dept !== '') {
+            $query->whereHas('user', function ($q) use ($dept) {
+                $q->where('province_office', 'like', '%'.$dept.'%');
+            });
+        }
+        if ($employee !== '') {
+            $query->whereHas('user', function ($q) use ($employee) {
+                $q->where('name', 'like', '%'.$employee.'%')
+                  ->orWhere('username', 'like', '%'.$employee.'%')
+                  ->orWhere('email', 'like', '%'.$employee.'%');
+            });
+        }
+        if ($type) {
+            $query->where(function ($q) use ($type) {
+                $q->where('leave_category_id', (int)$type)
+                  ->orWhereHas('category', function ($sub) use ($type) {
+                      $sub->where('name', 'like', '%'.$type.'%');
+                  });
+            });
+        }
+        if ($start || $end) {
+            $startDate = $start ? Carbon::parse($start)->startOfDay() : null;
+            $endDate = $end ? Carbon::parse($end)->endOfDay() : null;
+            $query->where(function ($q) use ($startDate, $endDate) {
+                if ($startDate && $endDate) {
+                    $q->where(function ($sub) use ($startDate, $endDate) {
+                        $sub->whereBetween('start_date', [$startDate->toDateString(), $endDate->toDateString()])
+                           ->orWhereBetween('end_date', [$startDate->toDateString(), $endDate->toDateString()])
+                           ->orWhere(function ($overlap) use ($startDate, $endDate) {
+                               $overlap->where('start_date', '<=', $startDate->toDateString())
+                                       ->where('end_date', '>=', $endDate->toDateString());
+                           });
+                    });
+                } elseif ($startDate) {
+                    $q->where('end_date', '>=', $startDate->toDateString());
+                } elseif ($endDate) {
+                    $q->where('start_date', '<=', $endDate->toDateString());
+                }
+            });
+        }
+        $leaves = $query->limit(800)->get();
+        $events = $leaves->map(function (Leave $leave) {
+            $user = $leave->user;
+            $name = trim((string)($user?->display_name ?? $user?->name ?? ''));
+            if ($name === '') {
+                $parts = [];
+                if (!empty($user?->first_name)) $parts[] = $user->first_name;
+                if (!empty($user?->middle_name)) $parts[] = mb_substr($user->middle_name, 0, 1).'.';
+                if (!empty($user?->last_name)) $parts[] = $user->last_name;
+                $name = trim(implode(' ', $parts));
+            }
+            $dj = (array)$leave->details_json;
+            $reason = (string)($dj['reason'] ?? $leave->reason ?? '');
+            $approverName = (string)($leave->approver?->name ?? '');
+            return [
+                'id' => $leave->id,
+                'title' => $name.' — '.(string)($leave->category?->name ?? 'Leave'),
+                'user' => [
+                    'id' => $user?->id,
+                    'name' => $name,
+                    'department' => (string)($user?->province_office ?? ''),
+                    'position' => (string)($user?->position ?? ''),
+                    'email' => (string)($user?->email ?? ''),
+                    'phone' => (string)($user?->phone ?? ''),
+                ],
+                'type' => (string)($leave->category?->name ?? ''),
+                'status' => (string)$leave->status,
+                'start' => (string)$leave->start_date,
+                'end' => (string)$leave->end_date,
+                'days' => (int)$leave->days,
+                'reason' => $reason,
+                'approver' => $approverName,
+            ];
+        })->values();
+        return response()->json(['ok' => true, 'events' => $events]);
+    }
+
+    public function exportCalendar(Request $request)
+    {
+        $format = strtolower((string)$request->query('format', 'csv'));
+        // Reuse query conditions via calendarData logic pieces
+        $status = $request->query('status');
+        $dept = trim((string)$request->query('department', ''));
+        $type = $request->query('type');
+        $employee = trim((string)$request->query('employee', ''));
+        $start = $request->query('start');
+        $end = $request->query('end');
+
+        $query = Leave::with(['user', 'category', 'approver'])->latest();
+        if ($status && in_array($status, ['pending','approved','rejected'], true)) $query->where('status', $status);
+        if ($dept !== '') $query->whereHas('user', fn($q)=>$q->where('province_office','like','%'.$dept.'%'));
+        if ($employee !== '') $query->whereHas('user', fn($q)=>$q->where('name','like','%'.$employee.'%')->orWhere('username','like','%'.$employee.'%')->orWhere('email','like','%'.$employee.'%'));
+        if ($type) $query->where(function($q) use ($type){ $q->where('leave_category_id',(int)$type)->orWhereHas('category',fn($sub)=>$sub->where('name','like','%'.$type.'%'));});
+        if ($start || $end) {
+            $startDate = $start ? Carbon::parse($start)->startOfDay() : null;
+            $endDate = $end ? Carbon::parse($end)->endOfDay() : null;
+            $query->where(function ($q) use ($startDate, $endDate) {
+                if ($startDate && $endDate) {
+                    $q->where(function ($sub) use ($startDate, $endDate) {
+                        $sub->whereBetween('start_date', [$startDate->toDateString(), $endDate->toDateString()])
+                           ->orWhereBetween('end_date', [$startDate->toDateString(), $endDate->toDateString()])
+                           ->orWhere(function ($overlap) use ($startDate, $endDate) {
+                               $overlap->where('start_date', '<=', $startDate->toDateString())
+                                       ->where('end_date', '>=', $endDate->toDateString());
+                           });
+                    });
+                } elseif ($startDate) {
+                    $q->where('end_date', '>=', $startDate->toDateString());
+                } elseif ($endDate) {
+                    $q->where('start_date', '<=', $endDate->toDateString());
+                }
+            });
+        }
+        $rows = $query->get();
+        if ($format === 'csv' || $format === 'excel') {
+            $csv = implode(',', ['Employee','Department','Type','Status','Start','End','Days','Reason','Approver','Email','Phone'])."\n";
+            foreach ($rows as $leave) {
+                $u = $leave->user;
+                $dj = (array)$leave->details_json;
+                $csv .= implode(',', [
+                    '"'.str_replace('"','""',(string)($u?->name ?? $u?->display_name ?? '')).'"',
+                    '"'.str_replace('"','""',(string)($u?->province_office ?? '')).'"',
+                    '"'.str_replace('"','""',(string)($leave->category?->name ?? '')).'"',
+                    '"'.str_replace('"','""',(string)$leave->status).'"',
+                    '"'.str_replace('"','""',(string)$leave->start_date).'"',
+                    '"'.str_replace('"','""',(string)$leave->end_date).'"',
+                    (string)((int)$leave->days),
+                    '"'.str_replace('"','""',(string)($dj['reason'] ?? $leave->reason ?? '')).'"',
+                    '"'.str_replace('"','""',(string)($leave->approver?->name ?? '')).'"',
+                    '"'.str_replace('"','""',(string)($u?->email ?? '')).'"',
+                    '"'.str_replace('"','""',(string)($u?->phone ?? '')).'"',
+                ])."\n";
+            }
+            $filename = 'leave-report-'.Carbon::now()->format('Ymd-His').'.csv';
+            return response($csv, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]);
+        }
+        $html = '<!doctype html><html><head><meta charset="utf-8"><title>Leave Report</title><style>
+            body{font-family:system-ui,Segoe UI,Arial,sans-serif;padding:24px;}
+            h1{font-size:20px;margin:0 0 12px;}
+            table{border-collapse:collapse;width:100%;}
+            th,td{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}
+            th{background:#f3f4f6;}
+            </style></head><body><h1>Leave Report</h1><table><thead><tr>
+            <th>Employee</th><th>Department</th><th>Type</th><th>Status</th><th>Start</th><th>End</th><th>Days</th><th>Reason</th><th>Approver</th><th>Email</th><th>Phone</th>
+            </tr></thead><tbody>';
+        foreach ($rows as $leave) {
+            $u = $leave->user;
+            $dj = (array)$leave->details_json;
+            $html .= '<tr><td>'.htmlspecialchars((string)($u?->name ?? $u?->display_name ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)($u?->province_office ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)($leave->category?->name ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)$leave->status).'</td>'
+                .'<td>'.htmlspecialchars((string)$leave->start_date).'</td>'
+                .'<td>'.htmlspecialchars((string)$leave->end_date).'</td>'
+                .'<td>'.(int)$leave->days.'</td>'
+                .'<td>'.htmlspecialchars((string)($dj['reason'] ?? $leave->reason ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)($leave->approver?->name ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)($u?->email ?? '')).'</td>'
+                .'<td>'.htmlspecialchars((string)($u?->phone ?? '')).'</td></tr>';
+        }
+        $html .= '</tbody></table><script>window.print && setTimeout(()=>window.print(),300);</script></body></html>';
+        return response($html);
+    }
+
     public function settings(Request $request)
     {
         $active = in_array((string)$request->query('view'), ['credit','signatories'], true)
